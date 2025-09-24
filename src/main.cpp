@@ -16,8 +16,7 @@ int main() {
         glfwTerminate();
         return -1;
     }
-    
-    //glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
     Model model;
     
     model.initialize("../shader/vertex_shader.glsl", "../shader/fragment_shader.glsl");

@@ -29,15 +29,12 @@ void Model::initialize(const char* vertexPath, const char* fragmentPath) {
 void Model::setupBuffers() {
     clearBuffers();
 
-    // Создаем объединенный массив вершин и цветов
     std::vector<float> combinedData;
     for (size_t i = 0; i < vertices.size() / 3; ++i) {
-        // Позиция
         combinedData.push_back(vertices[i * 3]);
         combinedData.push_back(vertices[i * 3 + 1]);
         combinedData.push_back(vertices[i * 3 + 2]);
         
-        // Цвет
         if (i < colors.size() / 3) {
             combinedData.push_back(colors[i * 3]);
             combinedData.push_back(colors[i * 3 + 1]);
@@ -56,11 +53,9 @@ void Model::setupBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, combinedData.size() * sizeof(float), combinedData.data(), GL_STATIC_DRAW);
 
-    // Атрибут позиции
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    // Атрибут цвета
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
@@ -93,7 +88,6 @@ void Model::render() {
             glDrawArrays(GL_TRIANGLE_STRIP, 0, numVertices);
             break;
         case TRIANGLE_FAN:
-            // Если есть несколько вееров
             if (fanOffsets.size() > 1) {
                 for (size_t i = 0; i < fanOffsets.size(); ++i) {
                     int start = fanOffsets[i];
@@ -106,7 +100,6 @@ void Model::render() {
                     }
                 }
             } else {
-                // Обычный одиночный веер
                 glDrawArrays(GL_TRIANGLE_FAN, 0, numVertices);
             }
             break;
@@ -265,12 +258,10 @@ void Model::Task2(int n, float radius) {
         float angle1 = 2.0f * M_PI * i / n;
         float angle2 = 2.0f * M_PI * (i + 1) / n;
         
-        // Первая вершина линии
         vertices.push_back(radius * cos(angle1));
         vertices.push_back(radius * sin(angle1));
         vertices.push_back(0.0f);
         
-        // Вторая вершина линии  
         vertices.push_back(radius * cos(angle2));
         vertices.push_back(radius * sin(angle2));
         vertices.push_back(0.0f);
@@ -293,7 +284,6 @@ void Model::Task3() {
     vertices.clear();
     colors.clear();
     
-    // Произвольные точки для ломаной линии
     std::vector<glm::vec2> points = {
         {-0.85f, 0.48f}, // 1
         {-0.623f, -0.26f}, // 2
@@ -360,36 +350,27 @@ void Model::Task5() {
     static int renderMode = 0; // 0 - TRIANGLES, 1 - TRIANGLE_STRIP, 2 - TRIANGLE_FAN
     
     std::vector<glm::vec2> triangles = {
-        // Первый треугольник (1-2-3)
-        {-0.7f, 0.8f}, {0.7f, 0.8f}, {0.2f, 0.5f},
-        // Второй треугольник (1-3-8)
-        {-0.7f, 0.8f}, {0.2f, 0.5f}, {-0.1358f,0.2985f},
-        // Третий треугольник (3-4-8)
-        {0.2f, 0.5f}, {0.2f, 0.0f}, {-0.1358f,0.2985f},
-        // Четвертый треугольник (4-5-6)
-        {0.2f, 0.0f}, {0.6f, 0.0f}, {0.6f, -0.4f},
-        // Пятый треугольник (4-6-7)
-        {0.2f, 0.0f}, {0.6f, -0.4f}, {-0.6f, -0.4f},
-        // Шестой треугольник (4-7-8)
-        {0.2f, 0.0f}, {-0.6f, -0.4f}, {-0.1358f,0.2985f}
+        {-0.7f, 0.8f}, {0.7f, 0.8f}, {0.2f, 0.5f}, // (1-2-3)
+        {-0.7f, 0.8f}, {0.2f, 0.5f}, {-0.1358f,0.2985f}, // (1-3-8)
+        {0.2f, 0.5f}, {0.2f, 0.0f}, {-0.1358f,0.2985f},  // (3-4-8)       
+        {0.2f, 0.0f}, {0.6f, 0.0f}, {0.6f, -0.4f}, // (4-5-6)      
+        {0.2f, 0.0f}, {0.6f, -0.4f}, {-0.6f, -0.4f}, // (4-6-7)
+        {0.2f, 0.0f}, {-0.6f, -0.4f}, {-0.1358f,0.2985f} // (4-7-8)
     };
 
     switch (renderMode) {
-        case 0: // GL_TRIANGLES - отдельные треугольники
+        case 0: // GL_TRIANGLES
         {
             int vertexCount = 0;
             for (int i = 0; i < triangles.size(); i += 3) {
-                // Берем три вершины треугольника
                 glm::vec2 v1 = triangles[i];
                 glm::vec2 v2 = triangles[i + 1];
                 glm::vec2 v3 = triangles[i + 2];
                 
-                // Добавляем вершины треугольника
                 vertices.push_back(v1.x); vertices.push_back(v1.y); vertices.push_back(0.0f);
                 vertices.push_back(v2.x); vertices.push_back(v2.y); vertices.push_back(0.0f);
                 vertices.push_back(v3.x); vertices.push_back(v3.y); vertices.push_back(0.0f);
                 
-                // Случайный цвет для каждого треугольника
                 glm::vec3 color = getRandomColor();
                 for (int j = 0; j < 3; ++j) {
                     colors.push_back(color.r);
@@ -406,7 +387,7 @@ void Model::Task5() {
             break;
         }
         
-        case 1: // GL_TRIANGLE_STRIP - лента треугольников
+        case 1: // GL_TRIANGLE_STRIP
         {
             
             std::vector<glm::vec2> triangleStrip = {
@@ -420,7 +401,6 @@ void Model::Task5() {
                 {0.6f, -0.4f},  // 8
             };
 
-            // Заполняем буферы вершин и цветов
             for (int i = 0; i < triangleStrip.size(); ++i) {
                 glm::vec2 vertex = triangleStrip[i];
                 vertices.push_back(vertex.x); 
@@ -439,24 +419,21 @@ void Model::Task5() {
             break;
         }
         
-        case 2: // GL_TRIANGLE_FAN - веер треугольников
+        case 2: // GL_TRIANGLE_FAN
         {
             fanOffsets.clear();
-            // Первый веер
             std::vector<glm::vec2> triangleFan1 = {
                 {0.2f, 0.0f}, {0.6f, 0.0f}, {0.6f, -0.4f}, 
                 {-0.6f, -0.4f}, {-0.1358f, 0.2985f}
             };
-        
-            // Второй веер  
+         
             std::vector<glm::vec2> triangleFan2 = {
                 {-0.7f, 0.8f}, {0.7f, 0.8f}, {0.2f, 0.5f}, {0.2f, 0.0f}
             };
         
-            fanOffsets.push_back(0); // начало первого веера
-            fanOffsets.push_back(triangleFan1.size()); // начало второго веера
+            fanOffsets.push_back(0); 
+            fanOffsets.push_back(triangleFan1.size()); 
 
-            // Объединяем оба веера в один буфер
             for (const auto& vertex : triangleFan1) {
                 vertices.push_back(vertex.x); 
                 vertices.push_back(vertex.y); 
@@ -482,17 +459,13 @@ void Model::Task5() {
             primitiveType = TRIANGLE_FAN;
             numVertices = vertices.size() / 3;
             
-            // Сохраняем информацию о разделении для рендера
-            //fanOffsets = {0, (int)triangleFan1.size()};
-            
             std::cout << "GL_TRIANGLE_FAN (" << triangleFan1.size() + triangleFan2.size() << " vertex)" << std::endl;
             break;
         }
     }
     
     numVertices = vertices.size() / 3;
-    
-    // Переключаем режим для следующего вызова
+
     renderMode = (renderMode + 1) % 3;
     setupBuffers();
 }
@@ -502,13 +475,10 @@ void Model::Task6(int n, float radius) {
     vertices.clear();
     colors.clear();
     
-    // Центральная вершина
     vertices.push_back(0.0f);
     vertices.push_back(0.0f);
     vertices.push_back(0.0f);
     
-
-    // Вершины по окружности
     for (int i = 0; i <= n; ++i) {
         float angle = 2.0f * M_PI * i / n;
         float x = radius * cos(angle);
@@ -518,14 +488,13 @@ void Model::Task6(int n, float radius) {
         vertices.push_back(y);
         vertices.push_back(0.0f);
         
-        // Случайный цвет для каждого треугольника
         glm::vec3 color = getRandomColor();
         colors.push_back(color.r);
         colors.push_back(color.g);
         colors.push_back(color.b);
     }
     
-    numVertices = n + 2; // Центр + n вершин + повтор первой для замыкания
+    numVertices = n + 2;
     primitiveType = TRIANGLE_FAN;
     setupBuffers();
 }

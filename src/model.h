@@ -54,6 +54,7 @@ class Model {
 
         /// @brief 
         void updateRenderSettings();
+    
     private:
         PrimitiveType primitiveType;
         GLuint VAO, VBO;
