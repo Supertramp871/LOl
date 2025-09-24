@@ -1,3 +1,0 @@
-/home/supertramp/Dev/Cpp/unikOpenGL/prtwo/build/CMakeFiles/main.dir
-/home/supertramp/Dev/Cpp/unikOpenGL/prtwo/build/CMakeFiles/edit_cache.dir
-/home/supertramp/Dev/Cpp/unikOpenGL/prtwo/build/CMakeFiles/rebuild_cache.dir
