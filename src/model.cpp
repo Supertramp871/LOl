@@ -500,9 +500,74 @@ void Model::Task6(int n, float radius) {
 }
 
 void Model::Task7() {
+    // Задание 7. Построить третью фигуру, указанню в варианте, 
+    // представив её в виде совокупности отдельных треугольников, назначив 
+    // каждому треугольнику свой цвет. Посмотреть результат работы программы 
+    // для различных способов тонирования. 
+    fanOffsets.clear(); 
+    vertices.clear();
+    colors.clear();
 
+    std::vector<glm::vec2> vertices7_points = {
+        {-0.5f, 0.8f},     // 0 - вершина 1
+        {0.7f, 0.7f},      // 1 - вершина 2  
+        {-0.1f, 0.5f},      // 2 - вершина 3
+        {-0.4f, -0.1f},      // 3 - вершина 4
+        {0.4f, -0.5f},      // 4 - вершина 5
+        {0.1f, -0.2f},     // 5 - вершина 6
+        {-0.1f, -0.6f},    // 6 - вершина 7
+        {-0.8, 0.0}, // 7 - вершина 8
+        {0.8f, 0.0f}, // 8 - вершина 9
+    };
+    
+    std::vector<glm::ivec3> triangles7_indices = {
+        {0, 1, 2},
+        {0, 2, 7},
+        {2, 3, 7},
+        {3, 5, 6},
+        {3, 6, 7},
+        {1, 2, 8},
+        {2, 8, 4},
+    };
+
+    std::vector<glm::vec2> triangles7;
+    for (const auto& tri : triangles7_indices) {
+        triangles7.push_back(vertices7_points[tri.x]);
+        triangles7.push_back(vertices7_points[tri.y]);
+        triangles7.push_back(vertices7_points[tri.z]);
+    }
+
+    int vertexCount = 0;
+    for (int i = 0; i < triangles7.size(); i += 3) {
+        glm::vec2 v1 = triangles7[i];
+        glm::vec2 v2 = triangles7[i + 1];
+        glm::vec2 v3 = triangles7[i + 2];
+        
+        vertices.push_back(v1.x); vertices.push_back(v1.y); vertices.push_back(0.0f);
+        vertices.push_back(v2.x); vertices.push_back(v2.y); vertices.push_back(0.0f);
+        vertices.push_back(v3.x); vertices.push_back(v3.y); vertices.push_back(0.0f);
+        
+        glm::vec3 color = getRandomColor();
+        for (int j = 0; j < 3; ++j) {
+            colors.push_back(color.r);
+            colors.push_back(color.g);
+            colors.push_back(color.b);
+
+        vertexCount += 1;
+        }
+    }
+
+    primitiveType = TRIANGLES;
+    
+    numVertices = vertices.size() / 3;
+    setupBuffers();
 }
 
 void Model::Task8() {
-
+    // Задание 8. Изменить программу предыдущей задачи таким образом, 
+    // чтобы: 
+    //     а) лицевые грани изображались только вершинами; 
+    //     б) лицевые грани изображались закрашенными, а обратные – линиями; 
+    //     в) лицевые и обратные грани изображались линиями (каркасное 
+    //     изображение). 
 }
