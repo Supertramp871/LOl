@@ -11,6 +11,7 @@ Model::Model() {
     currentTask = 1;
     smoothPoints = true;
     smoothMode = 1;
+    flatMode = true;
 }
 
 Model::~Model() {
@@ -113,6 +114,9 @@ void Model::updateRenderSettings() {
     
     int smoothModeLoc = glGetUniformLocation(shaderProgram, "u_smoothMode");
     glUniform1i(smoothModeLoc, smoothMode);
+
+    int flatModeLoc = glGetUniformLocation(shaderProgram, "u_flatMode");
+    glUniform1i(flatModeLoc, flatMode);
 
     if (primitiveType == POINTS) {
         glPointSize(pointSize);
@@ -221,6 +225,15 @@ void Model::key_callback(GLFWwindow* window, int key, int scancode, int action, 
                     updateRenderSettings();
                 }
                 break;
+
+            case GLFW_KEY_F:
+            if (action == GLFW_PRESS) {
+                flatMode = !flatMode;
+                const char* modes[] = {"SMOOTH", "FLAT"};
+                std::cout << "Flat mode: " << modes[flatMode ? 1 : 0] << std::endl;
+                updateRenderSettings();
+            }
+            break;
         }
     }
 }
@@ -530,31 +543,26 @@ void Model::Task7() {
         {2, 8, 4},
     };
 
-    std::vector<glm::vec2> triangles7;
     for (const auto& tri : triangles7_indices) {
-        triangles7.push_back(vertices7_points[tri.x]);
-        triangles7.push_back(vertices7_points[tri.y]);
-        triangles7.push_back(vertices7_points[tri.z]);
-    }
-
-    int vertexCount = 0;
-    for (int i = 0; i < triangles7.size(); i += 3) {
-        glm::vec2 v1 = triangles7[i];
-        glm::vec2 v2 = triangles7[i + 1];
-        glm::vec2 v3 = triangles7[i + 2];
+        vertices.push_back(vertices7_points[tri.x].x);
+        vertices.push_back(vertices7_points[tri.x].y);
+        vertices.push_back(0.0f);
+            
+        vertices.push_back(vertices7_points[tri.y].x);
+        vertices.push_back(vertices7_points[tri.y].y);
+        vertices.push_back(0.0f);
+            
+        vertices.push_back(vertices7_points[tri.z].x);
+        vertices.push_back(vertices7_points[tri.z].y);
+        vertices.push_back(0.0f);
+            
+        glm::vec3 color1 = getRandomColor();
+        glm::vec3 color2 = getRandomColor(); 
+        glm::vec3 color3 = getRandomColor();
         
-        vertices.push_back(v1.x); vertices.push_back(v1.y); vertices.push_back(0.0f);
-        vertices.push_back(v2.x); vertices.push_back(v2.y); vertices.push_back(0.0f);
-        vertices.push_back(v3.x); vertices.push_back(v3.y); vertices.push_back(0.0f);
-        
-        glm::vec3 color = getRandomColor();
-        for (int j = 0; j < 3; ++j) {
-            colors.push_back(color.r);
-            colors.push_back(color.g);
-            colors.push_back(color.b);
-
-        vertexCount += 1;
-        }
+        colors.push_back(color1.r); colors.push_back(color1.g); colors.push_back(color1.b);
+        colors.push_back(color2.r); colors.push_back(color2.g); colors.push_back(color2.b);
+        colors.push_back(color3.r); colors.push_back(color3.g); colors.push_back(color3.b);
     }
 
     primitiveType = TRIANGLES;
