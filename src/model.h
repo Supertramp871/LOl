@@ -82,5 +82,6 @@ class Model {
         static int renderMode; 
         std::vector<int> fanOffsets;
         bool flatMode;
+        static int polygonMode;
 };
 

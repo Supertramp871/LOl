@@ -20,7 +20,7 @@ int main() {
     Model model;
     
     model.initialize("../shader/vertex_shader.glsl", "../shader/fragment_shader.glsl");
-    model.setCurrentTask(7);
+    model.setCurrentTask(1);
 
     auto key_callback_wrapper = [](GLFWwindow* w, int key, int scancode, int action, int mods) {
         Model* model = static_cast<Model*>(glfwGetWindowUserPointer(w));
