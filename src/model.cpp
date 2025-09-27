@@ -367,36 +367,51 @@ void Model::Task5() {
 
     static int renderMode = 0; // 0 - TRIANGLES, 1 - TRIANGLE_STRIP, 2 - TRIANGLE_FAN
     
-    std::vector<glm::vec2> triangles = {
-        {-0.7f, 0.8f}, {0.7f, 0.8f}, {0.2f, 0.5f},       // (1-2-3)
-        {-0.7f, 0.8f}, {0.2f, 0.5f}, {-0.1358f,0.2985f}, // (1-3-8)
-        {0.2f, 0.5f}, {0.2f, 0.0f}, {-0.1358f,0.2985f},  // (3-4-8)       
-        {0.2f, 0.0f}, {0.6f, 0.0f}, {0.6f, -0.4f},       // (4-5-6)      
-        {0.2f, 0.0f}, {0.6f, -0.4f}, {-0.6f, -0.4f},     // (4-6-7)
-        {0.2f, 0.0f}, {-0.6f, -0.4f}, {-0.1358f,0.2985f} // (4-7-8)
-    };
-
     switch (renderMode) {
         case 0: // GL_TRIANGLES
         {
-            int vertexCount = 0;
-            for (int i = 0; i < triangles.size(); i += 3) {
-                glm::vec2 v1 = triangles[i];
-                glm::vec2 v2 = triangles[i + 1];
-                glm::vec2 v3 = triangles[i + 2];
-                
-                vertices.push_back(v1.x); vertices.push_back(v1.y); vertices.push_back(0.0f);
-                vertices.push_back(v2.x); vertices.push_back(v2.y); vertices.push_back(0.0f);
-                vertices.push_back(v3.x); vertices.push_back(v3.y); vertices.push_back(0.0f);
-                
-                glm::vec3 color = getRandomColor();
-                for (int j = 0; j < 3; ++j) {
-                    colors.push_back(color.r);
-                    colors.push_back(color.g);
-                    colors.push_back(color.b);
+            std::vector<glm::vec2> verticest5 = {
+                {-0.7f, 0.8f},      // 0
+                {0.7f, 0.8f},       // 1
+                {0.2f, 0.5f},       // 2
+                {0.2f, 0.0f},       // 3
+                {0.6f, 0.0f},       // 4
+                {0.6f, -0.4f},      // 5
+                {-0.6f, -0.4f},     // 6
+                {-0.1358f, 0.2985f} // 7
+            };
 
-                vertexCount += 1;
-                }
+            std::vector<glm::ivec3> triangles = {
+                {0, 1, 2},    // (1-2-3)
+                {0, 2, 7},    // (1-3-8)
+                {2, 3, 7},    // (3-4-8)
+                {3, 4, 5},    // (4-5-6)
+                {3, 5, 6},    // (4-6-7)
+                {3, 6, 7}     // (4-7-8)
+            };
+
+            int vertexCount = 0;
+            for (const auto& tri : triangles) {
+                vertices.push_back(verticest5[tri.x].x);
+                vertices.push_back(verticest5[tri.x].y);
+                vertices.push_back(0.0f);
+                    
+                vertices.push_back(verticest5[tri.y].x);
+                vertices.push_back(verticest5[tri.y].y);
+                vertices.push_back(0.0f);
+                    
+                vertices.push_back(verticest5[tri.z].x);
+                vertices.push_back(verticest5[tri.z].y);
+                vertices.push_back(0.0f);
+                    
+                glm::vec3 color1 = getRandomColor();
+                glm::vec3 color2 = getRandomColor(); 
+                glm::vec3 color3 = getRandomColor();
+                
+                colors.push_back(color1.r); colors.push_back(color1.g); colors.push_back(color1.b);
+                colors.push_back(color2.r); colors.push_back(color2.g); colors.push_back(color2.b);
+                colors.push_back(color3.r); colors.push_back(color3.g); colors.push_back(color3.b);
+                vertexCount += 3;
             }
 
             primitiveType = TRIANGLES;
@@ -407,7 +422,6 @@ void Model::Task5() {
         
         case 1: // GL_TRIANGLE_STRIP
         {
-            
             std::vector<glm::vec2> triangleStrip = {
                 {0.7f, 0.8f},        // 2
                 {-0.7f, 0.8f},       // 1
@@ -494,11 +508,11 @@ void Model::Task6(int n, float radius) {
     vertices.clear();
     colors.clear();
     
-    vertices.push_back(0.0f);
-    vertices.push_back(0.0f);
+    vertices.push_back(radius * cos(0));
+    vertices.push_back(radius * sin(0));
     vertices.push_back(0.0f);
     
-    for (int i = 0; i <= n; ++i) {
+    for (int i = 1; i <= n; ++i) {
         float angle = 2.0f * M_PI * i / n;
         float x = radius * cos(angle);
         float y = radius * sin(angle);
@@ -576,7 +590,7 @@ void Model::Task7() {
 }
 
 void Model::Task8() {
-    static int polygonMode = 0; // 0 - Points, 1 - Fill, 2 - Line
+    static int polygonMode = 0; // 0 - Points, 1 - Fill/Line, 2 - Line
     
     fanOffsets.clear(); 
     vertices.clear();
@@ -639,7 +653,7 @@ void Model::Task8() {
             
         case 1: 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            std::cout << "B::GL_FILL" << std::endl;
+            std::cout << "B::GL_FILL::GL_LINE" << std::endl;            
             break;
             
         case 2: 
@@ -648,10 +662,6 @@ void Model::Task8() {
             std::cout << "C::GL_LINE" << std::endl;
             break;
     }
-
-    primitiveType = TRIANGLES;
-    numVertices = vertices.size() / 3;
-    setupBuffers();
 
     polygonMode = (polygonMode + 1) % 3;
 
