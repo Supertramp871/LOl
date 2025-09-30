@@ -1,7 +1,6 @@
 #include <model.h>
 
 int Model::renderMode = 0;
-//int Model::polygonMode = 0;
 
 Model::Model() {
     VAO = 0; VBO = 0;
