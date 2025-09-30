@@ -1,7 +1,7 @@
 #include <model.h>
 
 int Model::renderMode = 0;
-int Model::polygonMode = 0;
+//int Model::polygonMode = 0;
 
 Model::Model() {
     VAO = 0; VBO = 0;
@@ -13,6 +13,7 @@ Model::Model() {
     smoothPoints = true;
     smoothMode = 1;
     flatMode = true;
+    polygonMode = 0;
 }
 
 Model::~Model() {
@@ -70,6 +71,16 @@ void Model::render() {
 
     glBindVertexArray(VAO);
     
+    if (currentTask != 9) {
+        renderNormal();
+    } else{
+        renderTask8bSpecial();
+    }
+    
+    glBindVertexArray(0);
+}
+
+void Model::renderNormal() {
     switch (primitiveType) {
         case POINTS:
             glDrawArrays(GL_POINTS, 0, numVertices);
@@ -106,8 +117,23 @@ void Model::render() {
             }
             break;
     }
-    
-    glBindVertexArray(0);
+}
+
+void Model::renderTask8bSpecial() {
+    glEnable(GL_CULL_FACE); // Включаем отсечение граней
+    glLineWidth(lineWidth); // установили ширину
+
+    // Рисуем только лицевые заликвкой 
+    glCullFace(GL_BACK);    //  отсекли задние грани 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
+
+    // Рисуем только задние грани линий
+    glCullFace(GL_FRONT); //  отсекаем лицевые грани 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+    glDrawArrays(GL_TRIANGLES, 0, numVertices); 
+
+    glDisable(GL_CULL_FACE); 
 }
 
 void Model::updateRenderSettings() {
@@ -163,6 +189,9 @@ void Model::setCurrentTask(int task) {
         case 8:
             Task8();
             break;
+        case 9:
+            Task8b();
+            break;
     }
 }
 
@@ -192,6 +221,9 @@ void Model::key_callback(GLFWwindow* window, int key, int scancode, int action, 
                 break;
             case GLFW_KEY_8: 
                 if (action == GLFW_PRESS) setCurrentTask(8); 
+                break;
+            case GLFW_KEY_9: 
+                if (action == GLFW_PRESS) setCurrentTask(9); 
                 break;
             
             case GLFW_KEY_K:
@@ -590,8 +622,6 @@ void Model::Task7() {
 }
 
 void Model::Task8() {
-    static int polygonMode = 0; // 0 - Points, 1 - Fill/Line, 2 - Line
-    
     fanOffsets.clear(); 
     vertices.clear();
     colors.clear();
@@ -648,21 +678,71 @@ void Model::Task8() {
         case 0: 
             glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
             glPointSize(pointSize);
-            std::cout << "A::GL_POINT" << std::endl;
+            std::cout << "8A::GL_POINT" << std::endl;
             break;
             
         case 1: 
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            std::cout << "B::GL_FILL::GL_LINE" << std::endl;            
-            break;
-            
-        case 2: 
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             glLineWidth(lineWidth);
-            std::cout << "C::GL_LINE" << std::endl;
+            std::cout << "8C::GL_LINE" << std::endl;
             break;
     }
 
-    polygonMode = (polygonMode + 1) % 3;
+    polygonMode = (polygonMode + 1) % 2; // 0->1 1->0
+}
 
+void Model::Task8b() {
+    fanOffsets.clear(); 
+    vertices.clear();
+    colors.clear();
+
+    std::vector<glm::vec2> vertices7_points = {
+        {-0.5f, 0.8f},     // 0 - vertex 1
+        {0.7f, 0.7f},      // 1 - vertex 2  
+        {-0.1f, 0.5f},     // 2 - vertex 3
+        {-0.4f, -0.1f},    // 3 - vertex 4
+        {0.4f, -0.5f},     // 4 - vertex 5
+        {0.1f, -0.2f},     // 5 - vertex 6
+        {-0.1f, -0.6f},    // 6 - vertex 7
+        {-0.8f, 0.0f},     // 7 - vertex 8
+        {0.8f, 0.0f},      // 8 - vertex 9
+    };
+    
+    std::vector<glm::ivec3> triangles7_indices = {
+        {0, 1, 2},
+        {0, 2, 7},
+        {7, 3, 2},
+        {3, 5, 6},
+        {3, 6, 7},
+        {1, 2, 8},
+        {2, 8, 4},
+    };
+
+    for (const auto& tri : triangles7_indices) {
+        vertices.push_back(vertices7_points[tri.x].x);
+        vertices.push_back(vertices7_points[tri.x].y);
+        vertices.push_back(0.0f);
+            
+        vertices.push_back(vertices7_points[tri.y].x);
+        vertices.push_back(vertices7_points[tri.y].y);
+        vertices.push_back(0.0f);
+            
+        vertices.push_back(vertices7_points[tri.z].x);
+        vertices.push_back(vertices7_points[tri.z].y);
+        vertices.push_back(0.0f);
+            
+        glm::vec3 color1 = getRandomColor();
+        glm::vec3 color2 = getRandomColor(); 
+        glm::vec3 color3 = getRandomColor();
+        
+        colors.push_back(color1.r); colors.push_back(color1.g); colors.push_back(color1.b);
+        colors.push_back(color2.r); colors.push_back(color2.g); colors.push_back(color2.b);
+        colors.push_back(color3.r); colors.push_back(color3.g); colors.push_back(color3.b);
+    }
+
+    primitiveType = TRIANGLES;
+    numVertices = vertices.size() / 3;
+    setupBuffers();
+
+    std::cout << "8B::GL_FILL_AND_GL_LINE" << std::endl;            
 }

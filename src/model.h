@@ -47,6 +47,7 @@ class Model {
         void Task6(int n, float radius= 0.8);
         void Task7();
         void Task8();
+        void Task8b();
 
         /// @brief 
         /// @param task 
@@ -54,6 +55,9 @@ class Model {
 
         /// @brief 
         void updateRenderSettings();
+
+        void renderNormal();
+        void renderTask8bSpecial();
     
     private:
         PrimitiveType primitiveType;
@@ -82,6 +86,6 @@ class Model {
         static int renderMode; 
         std::vector<int> fanOffsets;
         bool flatMode;
-        static int polygonMode;
+        int polygonMode;
 };
 
